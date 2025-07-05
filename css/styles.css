@@ -1,0 +1,912 @@
+/* ==========================================================================
+   BIRTHDAY CAROUSEL STYLES
+   ========================================================================== */
+
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+    background: linear-gradient(135deg, #04020c 0%, #1a1a2e 100%);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   INTRO VIDEO OVERLAY
+   ========================================================================== */
+.intro-video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.intro-video-overlay video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.intro-video-overlay.hidden {
+    display: none;
+}
+
+/* ==========================================================================
+   BOUNCING MESSAGE
+   ========================================================================== */
+.bouncing-message {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+    font-size: 2rem;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 2px 16px #000;
+    letter-spacing: 0.05em;
+    z-index: 10000;
+    animation: bounce 0.5s cubic-bezier(0.5, 0.6, 0.6, 1) infinite alternate;
+}
+
+@keyframes bounce {
+    from {
+        transform: translate(-50%, -50%);
+    }
+    to {
+        transform: translate(-50%, -58%);
+    }
+}
+
+/* ==========================================================================
+   PRELUDE VIDEO
+   ========================================================================== */
+.prelude-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9998;
+    display: none;
+}
+
+.prelude-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.prelude-video.active {
+    display: block;
+}
+
+.prelude-video::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(255, 20, 147, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 191, 255, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.prelude-video::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   CAROUSEL CONTAINER
+   ========================================================================== */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #04020c;
+    padding: 1%;
+}
+
+.carousel-container.hidden {
+    display: none;
+}
+
+/* ==========================================================================
+   VIDEO PROGRESS BAR
+   ========================================================================== */
+.video-progress {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    margin-left: 20px;
+    pointer-events: none;
+}
+
+.progress-ring {
+    width: 48px;
+    height: 48px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 3;
+    fill: transparent;
+    r: 21;
+    cx: 24;
+    cy: 24;
+}
+
+.progress-ring__progress {
+    stroke: #fff;
+    stroke-width: 3;
+    fill: transparent;
+    r: 21;
+    cx: 24;
+    cy: 24;
+    stroke-dasharray: 131.95;
+    stroke-dashoffset: 131.95;
+    transition: stroke-dashoffset 0.1s linear;
+    stroke-linecap: round;
+}
+
+.progress-time {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   BIRTHDAY FINALE - FADE TO BLACK SCREEN
+   ========================================================================== */
+.birthday-finale {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.birthday-finale.active {
+    display: flex;
+}
+
+.birthday-finale.fade-in {
+    opacity: 1;
+}
+
+.birthday-message {
+    color: #fff;
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+    font-size: 4rem;
+    text-align: center;
+    letter-spacing: 0.1em;
+    text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 2s ease-in-out 2s, transform 2s ease-in-out 2s;
+}
+
+.birthday-finale.show-text .birthday-message {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes messageGlow {
+    from {
+        text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+    }
+    to {
+        text-shadow: 0 8px 30px rgba(255, 255, 255, 0.6), 0 0 50px rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ==========================================================================
+   CONFETTI
+   ========================================================================== */
+.confetti-piece {
+    position: absolute;
+    pointer-events: none;
+    animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   BACKGROUND ELEMENTS
+   ========================================================================== */
+.static-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/static/grudge.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.particles-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.particles-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(206,141,0,0.3) 0%, rgba(122,51,0,0.2) 50%, rgba(12,0,0,0) 100%);
+    filter: blur(30px);
+    animation: particle-glow 8s ease-in-out infinite alternate;
+}
+
+.spotlight-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(0, 150, 255, 0.3) 0%, rgba(0, 75, 160, 0.1) 50%, rgba(0, 0, 40, 0) 80%);
+    filter: blur(40px);
+    z-index: 3;
+    opacity: 0.8;
+}
+
+.horizontal-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, 
+        rgba(4, 2, 12, 0.8) 0%, 
+        rgba(4, 2, 40, 0.2) 20%, 
+        rgba(0, 120, 255, 0.3) 50%,  /* 💙 vibrant blue highlight */
+        rgba(4, 2, 40, 0.2) 80%, 
+        rgba(4, 2, 12, 0.8) 100%);
+    z-index: 3;
+}
+
+.vignette-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    z-index: 3;
+}
+
+/* ==========================================================================
+   FLOATING PARTICLES
+   ========================================================================== */
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, rgba(206,141,0,0.8) 0%, rgba(122,51,0,0.4) 100%);
+    border-radius: 50%;
+    animation: float-particle 8s infinite linear;
+}
+
+/* ==========================================================================
+   CAROUSEL SLIDES
+   ========================================================================== */
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==========================================================================
+   FEATURE ELEMENTS
+   ========================================================================== */
+.feature-video {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 620px;
+    max-width: 90%;
+    z-index: 5;
+    opacity: 0;
+    animation: feature-entrance 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.2s;
+    object-fit: contain;
+    background: transparent;
+}
+
+.feature-image {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 521px;
+    height: auto;
+    z-index: 5;
+    opacity: 0;
+    animation: feature-entrance 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.2s;
+}
+
+.feature-audio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   SLIDE CONTENT
+   ========================================================================== */
+.slide-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 130px;
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    z-index: 6;
+    text-align: center;
+}
+
+.feature-title {
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+    font-size: 70px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(50vh);
+    animation: text-slide-top 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.4s;
+    overflow: hidden;
+    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8), 
+                 0px 8px 20px rgba(0, 0, 0, 0.5),
+                 0px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.feature-description {
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(50vh);
+    animation: text-slide-top 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.6s;
+    overflow: hidden;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7), 
+                 0px 4px 8px rgba(0, 0, 0, 0.4),
+                 0px 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.feature-subtext {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 28px;
+    font-style: italic;
+    color: #ffffff !important;
+    margin-top: -20px;
+    margin-bottom: 25px;
+    opacity: 0;
+    transform: translateY(50vh);
+    animation: text-slide-top 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.5s;
+    text-align: center;
+    text-shadow: 
+        0px 3px 8px rgba(0, 0, 0, 0.8), 
+        0px 5px 12px rgba(0, 0, 0, 0.6),
+        0px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* ==========================================================================
+   NAVIGATION OVERLAY
+   ========================================================================== */
+.navigation-overlay {
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    right: 1%;
+    bottom: 1%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 30px;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+    padding: 20px;
+}
+
+.nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.nav-bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+/* ==========================================================================
+   NAVIGATION CONTROLS
+   ========================================================================== */
+.sound-controls {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+    pointer-events: auto;
+}
+
+.sound-btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    transition: all 0.3s ease;
+}
+
+.sound-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+    transform: scale(1.05);
+}
+
+.sound-btn.muted i {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-btn {
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   LOGO AND COUNTER
+   ========================================================================== */
+.logo {
+    width: 20vw;
+    height: auto;
+}
+
+.logo img {
+    max-width: 100%;
+    max-height: auto;
+    object-fit: contain;
+}
+
+.slide-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Syncopate', 'Roboto', Arial, sans-serif;
+}
+
+.counter-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 15px;
+    border-radius: 30px;
+    position: relative;
+}
+
+.current-slide {
+    font-size: 36px;
+    color: #ffffff;
+    font-style: italic;
+    margin-right: 8px;
+}
+
+.counter-separator {
+    width: 2px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 12px;
+}
+
+.total-slides {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+@keyframes particle-glow {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(1); 
+    }
+    50% { 
+        opacity: 0.6; 
+        transform: scale(1.1); 
+    }
+}
+
+@keyframes feature-entrance {
+    0% { 
+        opacity: 0;
+        transform: translateX(-50%) translateY(100%);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes text-slide-top {
+    0% {
+        opacity: 0;
+        transform: translateY(50vh);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes feature-description-entrance {
+    0% { 
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) translateX(100px);
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes text-fade-out {
+    to {
+        opacity: 0;
+        transform: translateY(-50vh);
+    }
+}
+
+/* ==========================================================================
+   SLIDE EXIT ANIMATIONS
+   ========================================================================== */
+.slide-exit .feature-image,
+.slide-exit .feature-video,
+.slide-exit .feature-title,
+.slide-exit .feature-description {
+    animation: fade-out 0.3s ease-out forwards;
+}
+
+.slide-exit .feature-title,
+.slide-exit .feature-description {
+    animation: text-fade-out 0.3s ease-out forwards;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN - DESKTOP/TABLET
+   ========================================================================== */
+@media (min-width: 769px) {
+    .feature-description {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(0) !important;
+        width: 80% !important;
+        max-width: 600px !important;
+        text-align: center !important;
+        animation: feature-description-entrance 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+        animation-delay: 0.8s !important;
+        z-index: 100 !important;
+        margin: 0 !important;
+        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7), 
+                     0px 4px 8px rgba(0, 0, 0, 0.4),
+                     0px 1px 2px rgba(0, 0, 0, 0.9);
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN - MOBILE
+   ========================================================================== */
+@media (max-width: 768px) {
+    .feature-description {
+        position: static;
+        transform: translateY(50vh);
+        animation: text-slide-top 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        animation-delay: 0.6s;
+    }
+    
+    .feature-title {
+        margin-top: 10px !important;
+        font-size: 50px;
+        text-shadow: 0px 3px 8px rgba(0, 0, 0, 0.8), 
+                     0px 6px 15px rgba(0, 0, 0, 0.5),
+                     0px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    .feature-subtext {
+        font-size: 24px;
+        margin-top: -15px;
+        margin-bottom: 20px;
+    }
+    
+    .slide-content {
+        width: 90%;
+        top: 25px;
+    }
+    
+    .feature-description {
+        font-size: 16px;
+        max-width: 500px;
+    }
+    
+    .feature-image {
+        width: 400px;
+        height: 500px;
+    }
+    
+    .feature-video {
+        width: 400px;
+        height: 480px;
+        bottom: 90px;
+    }
+    
+    .navigation-overlay {
+        padding: 15px;
+    }
+    
+    .current-slide {
+        font-size: 28px;
+    }
+    
+    .total-slides {
+        font-size: 18px;
+    }
+    
+    .counter-separator {
+        height: 20px;
+        margin: 0 10px;
+    }
+    
+    .nav-btn,
+    .sound-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+    
+    .birthday-message {
+        font-size: 2.5rem !important;
+    }
+    
+    .bouncing-message {
+        font-size: 1.5rem;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN - SMALL MOBILE
+   ========================================================================== */
+@media (max-width: 480px) {
+    .slide-content {
+        width: 90%;
+        top: 95px;
+    }
+    
+    .feature-title {
+        font-size: 36px;
+        margin-bottom: 15px;
+        text-shadow: 0px 2px 6px rgba(0, 0, 0, 0.8), 
+                     0px 4px 10px rgba(0, 0, 0, 0.5),
+                     0px 1px 3px rgba(0, 0, 0, 0.9);
+    }
+
+    .feature-subtext {
+        font-size: 20px;
+        margin-top: -12px;
+        margin-bottom: 18px;
+    }
+    
+    .feature-description {
+        font-size: 15px;
+        max-width: 100%;
+        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7), 
+                     0px 4px 8px rgba(0, 0, 0, 0.4),
+                     0px 1px 2px rgba(0, 0, 0, 0.9);
+    }
+    
+    .feature-image {
+        width: 320px;
+        height: 400px;
+    }
+    
+    .feature-video {
+        width: 320px;
+        height: 380px;
+        bottom: 80px;
+    }
+    
+    .navigation-overlay {
+        padding: 10px;
+    }
+    
+    .current-slide {
+        font-size: 24px;
+    }
+    
+    .total-slides {
+        font-size: 16px;
+    }
+    
+    .counter-separator {
+        height: 16px;
+        margin: 0 8px;
+    }
+    
+    .counter-display {
+        padding: 4px 12px;
+    }
+    
+    .nav-btn,
+    .sound-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+    
+    .birthday-message {
+        font-size: 1.8rem !important;
+    }
+    
+    .bouncing-message {
+        font-size: 1.2rem;
+    }
+}
