@@ -449,11 +449,9 @@ class FeatureCarousel {
             const currentAudio = this.slides[this.currentSlide].querySelector('audio');
             if (currentVideo) {
                 currentVideo.pause();
-                currentVideo.currentTime = 0;  // ADDED THIS LINE
             }
             if (currentAudio) {
                 currentAudio.pause();
-                currentVideo.currentTime = 0;  // ADDED THIS LINE
             }
         }
         
@@ -613,7 +611,7 @@ class FeatureCarousel {
         document.body.appendChild(finale);
         let message = document.createElement('div');
         message.className = 'birthday-message';
-        message.textContent = 'Happy Birthday, Moez!';
+        message.textContent = 'Happy 18th Birthday, Ziza!';
         finale.appendChild(message);
     }
 
