@@ -5,6 +5,142 @@
  * ========================================================================
  */
 
+// Video transition logic - ADD THIS TO THE TOP OF YOUR CAROUSEL.JS
+window.userHasInteracted = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const introOverlay = document.getElementById('introVideoOverlay');
+    const preludeVideo = document.getElementById('preludeVideo');
+    const vid01 = document.getElementById('vid01');
+    const vid02 = document.getElementById('vid02');
+    
+    // Phase 1: Click intro overlay → show prelude
+    if (introOverlay) {
+        introOverlay.addEventListener('click', function() {
+            window.userHasInteracted = true;
+            
+            // PROPERLY STOP vid01
+            if (vid01) {
+                vid01.pause();
+                vid01.currentTime = 0;
+                vid01.muted = true;
+            }
+            
+            // Hide intro, show prelude
+            introOverlay.classList.add('hidden');
+            if (preludeVideo) {
+                preludeVideo.classList.add('active');
+            }
+            
+            // Play prelude with sound
+            if (vid02) {
+                vid02.muted = false;
+                vid02.currentTime = 0;
+                vid02.play().catch(e => console.log('Prelude play failed:', e));
+            }
+            
+            // Enable sound for carousel
+            enableCarouselSound();
+        });
+    }
+    
+    // Phase 2: Prelude ends → start carousel
+    if (vid02) {
+        vid02.addEventListener('ended', function() {
+            startCarousel();
+        });
+    }
+    
+    // Skip prelude on click
+    if (preludeVideo) {
+        preludeVideo.addEventListener('click', function() {
+            startCarousel();
+        });
+    }
+    
+    function startCarousel() {
+        // PROPERLY STOP both videos
+        if (vid01) {
+            vid01.pause();
+            vid01.currentTime = 0;
+            vid01.muted = true;
+        }
+        
+        if (vid02) {
+            vid02.pause();
+            vid02.currentTime = 0;
+        }
+        
+        // Hide prelude
+        if (preludeVideo) {
+            preludeVideo.style.display = 'none';
+        }
+
+        // Show carousel
+        const carouselContainer = document.querySelector('.carousel-container');
+        if (carouselContainer) {
+            carouselContainer.classList.remove('hidden');
+        }
+
+        // Initialize carousel now, if not already done
+        if (!window.featureCarouselInstance) {
+            window.featureCarouselInstance = new FeatureCarousel();
+            // Wait a tiny bit to ensure carousel is set up
+            setTimeout(() => {
+                const firstVideo = document.querySelector('.carousel-slide.active video');
+                if (firstVideo) {
+                    firstVideo.currentTime = 0;
+                    firstVideo.play().catch(e => {});
+                }
+            }, 100);
+        } else {
+            window.featureCarouselInstance.goToSlide(0);
+            // Play the first video
+            const firstVideo = document.querySelector('.carousel-slide.active video');
+            if (firstVideo) {
+                firstVideo.currentTime = 0;
+                firstVideo.play().catch(e => {});
+            }
+        }
+    }
+    
+    function enableCarouselSound() {
+        // Enable sound for all carousel media
+        const videos = document.querySelectorAll('.carousel-slide video');
+        const audios = document.querySelectorAll('.carousel-slide audio');
+        
+        videos.forEach(video => video.muted = false);
+        audios.forEach(audio => audio.muted = false);
+        
+        // Update sound button
+        const soundBtn = document.getElementById('soundBtn');
+        if (soundBtn) {
+            soundBtn.classList.remove('muted');
+            const icon = soundBtn.querySelector('i');
+            if (icon) icon.textContent = 'volume_up';
+        }
+        
+        // Update carousel state
+        if (window.featureCarouselInstance) {
+            window.featureCarouselInstance.isMuted = false;
+        }
+    }
+    
+    // Initialize carousel and particles
+    console.log("DOM loaded - initializing carousel");
+    initializeParticleEffects();
+    
+    // Emergency keyboard shortcut
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'b' || e.key === 'B') {
+            console.log("B key pressed - forcing birthday finale");
+            if (window.featureCarouselInstance) {
+                window.featureCarouselInstance.showBirthdayFinale();
+            }
+        }
+    });
+});
+
 class FeatureCarousel {
     constructor() {
         this.currentSlide = 0;
@@ -585,52 +721,52 @@ class FeatureCarousel {
     }
 
     // FIXED FINALE FUNCTION - GUARANTEED TO WORK
- showBirthdayFinale() {
-    // Stop all media
-    this.stopProgressTracking();
+    showBirthdayFinale() {
+        // Stop all media
+        this.stopProgressTracking();
 
-    if (this.currentSlide >= 0 && this.currentSlide < this.slides.length) {
-        const currentVideo = this.slides[this.currentSlide].querySelector('video');
-        const currentAudio = this.slides[this.currentSlide].querySelector('audio');
-        if (currentVideo) currentVideo.pause();
-        if (currentAudio) currentAudio.pause();
+        if (this.currentSlide >= 0 && this.currentSlide < this.slides.length) {
+            const currentVideo = this.slides[this.currentSlide].querySelector('video');
+            const currentAudio = this.slides[this.currentSlide].querySelector('audio');
+            if (currentVideo) currentVideo.pause();
+            if (currentAudio) currentAudio.pause();
+        }
+
+        // Hide carousel
+        const carousel = document.querySelector('.carousel-container');
+        if (carousel) {
+            carousel.style.display = 'none';
+        }
+
+        // Finale
+        let finale = document.getElementById('birthdayFinale');
+        if (!finale) {
+            finale = document.createElement('div');
+            finale.id = 'birthdayFinale';
+            finale.className = 'birthday-finale';
+            document.body.appendChild(finale);
+            let message = document.createElement('div');
+            message.className = 'birthday-message';
+            message.textContent = 'Happy Birthday, Moez!';
+            finale.appendChild(message);
+        }
+
+        // Remove any inline styles
+        finale.style.cssText = "";
+
+        // Reset classes
+        finale.classList.remove('fade-in', 'show-text');
+        finale.classList.add('active');
+
+        // Fade in the black screen
+        finale.classList.add('fade-in');
+
+        // Show the birthday message after fade-in
+        finale.classList.add('show-text');
+
+        // Start confetti after message appears
+        this.createConfetti();
     }
-
-    // Hide carousel
-    const carousel = document.querySelector('.carousel-container');
-    if (carousel) {
-        carousel.style.display = 'none';
-    }
-
-    // Finale
-    let finale = document.getElementById('birthdayFinale');
-    if (!finale) {
-        finale = document.createElement('div');
-        finale.id = 'birthdayFinale';
-        finale.className = 'birthday-finale';
-        document.body.appendChild(finale);
-        let message = document.createElement('div');
-        message.className = 'birthday-message';
-        message.textContent = 'Happy Birthday, Moez!';
-        finale.appendChild(message);
-    }
-
-    // Remove any inline styles
-    finale.style.cssText = "";
-
-    // Reset classes
-    finale.classList.remove('fade-in', 'show-text');
-    finale.classList.add('active');
-
-    // Fade in the black screen
-    finale.classList.add('fade-in');
-
-    // Show the birthday message after fade-in
-    finale.classList.add('show-text');
-
-    // Start confetti after message appears
-    this.createConfetti();
-}
 
     createConfetti() {
         console.log("Creating confetti animation");
@@ -698,20 +834,3 @@ function initializeParticleEffects() {
         });
     });
 }
-
-// Init carousel and particles on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM loaded - initializing carousel");
-    window.featureCarouselInstance = new FeatureCarousel();
-    initializeParticleEffects();
-    
-    // Emergency keyboard shortcut
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'b' || e.key === 'B') {
-            console.log("B key pressed - forcing birthday finale");
-            if (window.featureCarouselInstance) {
-                window.featureCarouselInstance.showBirthdayFinale();
-            }
-        }
-    });
-});
